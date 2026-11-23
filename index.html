@@ -1635,10 +1635,11 @@
     const flashDealsRef = ref(db, "flashDeals");
     onValue(flashDealsRef, (snapshot) => {
       if (snapshot.exists()) {
-        const val = snapshot.val();
-        const itemsList = val.items
-          ? Object.entries(val.items).map(([id, item]) => ({ id, ...item })).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))
+        const val = snapshot.val() || {};
+        const rawItems = val.items && typeof val.items === "object"
+          ? Object.entries(val.items).map(([id, item]) => ({ id, ...(item || {}) }))
           : [];
+        const itemsList = rawItems.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
         flashDealsState = {
           active: Boolean(val.active),
           endsAt: Number(val.endsAt || 0),
@@ -1881,42 +1882,54 @@
 
     // CARTÃO OFERTAS RELÂMPAGO JUNTO AOS POSTS
     function getFlashRemainingParts() {
-      const diffMs = Math.max(0, (flashDealsState.endsAt || 0) - Date.now());
+      const targetEnd = Number(flashDealsState.endsAt || 0);
+      if (!targetEnd || targetEnd <= Date.now()) {
+        return { expired: true, hh: "00", mm: "00", ss: "00" };
+      }
+      const diffMs = Math.max(0, targetEnd - Date.now());
       const totalSec = Math.floor(diffMs / 1000);
       const hours = Math.floor(totalSec / 3600);
       const mins = Math.floor((totalSec % 3600) / 60);
       const secs = totalSec % 60;
       return {
-        expired: diffMs <= 0,
+        expired: false,
         hh: String(hours).padStart(2, "0"),
         mm: String(mins).padStart(2, "0"),
         ss: String(secs).padStart(2, "0")
       };
     }
 
+    function updateFlashCountdownDOM() {
+      const hhEl = document.getElementById("flash-timer-hh");
+      const mmEl = document.getElementById("flash-timer-mm");
+      const ssEl = document.getElementById("flash-timer-ss");
+      if (!hhEl || !mmEl || !ssEl) return;
+
+      const { hh, mm, ss } = getFlashRemainingParts();
+      hhEl.textContent = hh;
+      mmEl.textContent = mm;
+      ssEl.textContent = ss;
+    }
+
     function startFlashDealsTicker() {
-      if (flashCountdownInterval) clearInterval(flashCountdownInterval);
-      if (!flashDealsState.active || flashDealsState.items.length === 0) return;
+      if (flashCountdownInterval) {
+        clearInterval(flashCountdownInterval);
+        flashCountdownInterval = null;
+      }
+      updateFlashCountdownDOM();
+      if (!flashDealsState.active || !flashDealsState.items || flashDealsState.items.length === 0) return;
 
       flashCountdownInterval = setInterval(() => {
-        const hhEl = document.getElementById("flash-timer-hh");
-        const mmEl = document.getElementById("flash-timer-mm");
-        const ssEl = document.getElementById("flash-timer-ss");
-        if (!hhEl || !mmEl || !ssEl) return;
-
-        const { hh, mm, ss } = getFlashRemainingParts();
-        hhEl.textContent = hh;
-        mmEl.textContent = mm;
-        ssEl.textContent = ss;
+        updateFlashCountdownDOM();
       }, 1000);
     }
 
     function renderFlashDealsCardHTML() {
-      if (!flashDealsState.active || !flashDealsState.items || flashDealsState.items.length === 0) {
+      if (!flashDealsState.active || !Array.isArray(flashDealsState.items) || flashDealsState.items.length === 0) {
         return "";
       }
       const { expired, hh, mm, ss } = getFlashRemainingParts();
-      if (expired && flashDealsState.endsAt > 0) {
+      if (expired) {
         return "";
       }
 
@@ -2798,6 +2811,11 @@
           ? "flex-1 px-3 py-3 border-b-2 border-blue-700 text-blue-700 whitespace-nowrap"
           : "flex-1 px-3 py-3 border-b-2 border-transparent text-gray-500 whitespace-nowrap";
       });
+
+      if (tab === "flashDeals") {
+        populateFlashPostSelector();
+        syncAdminFlashDealsUI();
+      }
     };
 
     // GESTÃO DE OFERTAS RELÂMPAGO NO PAINEL ADM
@@ -2839,15 +2857,19 @@
         showToast("Faça login como administrador.");
         return;
       }
+      const hours = Number(document.getElementById("flashDealsDurationHours").value || 6);
+      const nextEndsAt = checked && (!flashDealsState.endsAt || flashDealsState.endsAt <= Date.now())
+        ? Date.now() + (hours * 3600 * 1000)
+        : flashDealsState.endsAt;
+
       try {
-        const hours = Number(document.getElementById("flashDealsDurationHours").value || 6);
         await set(ref(db, "flashDeals/active"), Boolean(checked));
-        if (checked && (!flashDealsState.endsAt || flashDealsState.endsAt <= Date.now())) {
-          await set(ref(db, "flashDeals/endsAt"), Date.now() + (hours * 3600 * 1000));
+        if (nextEndsAt) {
+          await set(ref(db, "flashDeals/endsAt"), nextEndsAt);
         }
-        showToast(checked ? "Ofertas Relâmpago ativadas na vitrine!" : "Ofertas Relâmpago ocultadas.");
+        showToast(checked ? "Ofertas Relâmpago ativadas!" : "Ofertas Relâmpago pausadas.");
       } catch (err) {
-        showToast("Erro ao alterar status das Ofertas Relâmpago.");
+        showToast("Erro ao alterar status da Oferta Relâmpago.");
       }
     };
 
@@ -2856,14 +2878,17 @@
         showToast("Faça login como administrador.");
         return;
       }
-      const active = document.getElementById("flashDealsActiveToggle").checked;
+      const toggleEl = document.getElementById("flashDealsActiveToggle");
+      if (toggleEl && !toggleEl.checked) {
+        toggleEl.checked = true;
+      }
       const hours = Number(document.getElementById("flashDealsDurationHours").value || 6);
       const endsAt = Date.now() + (hours * 3600 * 1000);
 
       try {
-        await set(ref(db, "flashDeals/active"), active);
+        await set(ref(db, "flashDeals/active"), true);
         await set(ref(db, "flashDeals/endsAt"), endsAt);
-        showToast(active ? `Ofertas Relâmpago ativas por ${hours}h!` : "Ofertas Relâmpago desativadas.");
+        showToast(`Cronômetro relâmpago iniciado por ${hours}h!`);
       } catch (err) {
         showToast("Erro ao atualizar cronômetro relâmpago.");
       }
