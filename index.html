@@ -88,7 +88,7 @@
     }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    
+
     .carousel-track {
       scroll-snap-type: x mandatory;
       touch-action: pan-x pan-y;
@@ -114,9 +114,35 @@
     .splash-animate {
       animation: fadeOutSplash 1.1s ease-out forwards;
     }
+    @keyframes bellSwing {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(16deg); }
+      40% { transform: rotate(-14deg); }
+      60% { transform: rotate(10deg); }
+      80% { transform: rotate(-8deg); }
+    }
+    .bell-swing {
+      animation: bellSwing 0.9s ease-in-out infinite;
+    }
   </style>
 </head>
 <body class="bg-[#F5F5F5] text-[#222222] font-sans antialiased pb-24 md:pb-28">
+
+  <!-- SINO FLUTUANTE TEMPORÁRIO DE ALERTA DE NOVO POST NA VITRINE -->
+  <div id="floatingNewPostBell"
+    class="hidden fixed top-16 sm:top-20 right-3 sm:right-6 z-50 flex items-center gap-2 max-w-[85vw]">
+    <button type="button" onclick="openLatestAlertedPost()"
+      class="bg-amber-400 hover:bg-amber-300 text-[#031238] px-3 py-2 rounded-full shadow-2xl border border-white flex items-center gap-2 text-left active:scale-95 transition">
+      <i class="fa-solid fa-bell bell-swing text-sm flex-shrink-0"></i>
+      <span id="floatingNewPostBellText" class="text-[11px] sm:text-xs font-black truncate max-w-[190px] sm:max-w-[260px]">
+        Novo anúncio na vitrine!
+      </span>
+    </button>
+    <button type="button" onclick="dismissFloatingPostBell()" aria-label="Fechar alerta"
+      class="w-7 h-7 rounded-full bg-[#031238]/90 text-white text-xs flex items-center justify-center shadow-lg border border-white/20 flex-shrink-0">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
 
   <!-- SPLASH SCREEN NATIVA DE ABERTURA -->
   <div id="splashScreen" class="fixed inset-0 z-50 bg-gradient-to-b from-[#031238] via-[#08246b] to-[#031238] flex flex-col items-center justify-center text-white splash-animate pointer-events-none">
@@ -138,7 +164,7 @@
   <!-- CABEÇALHO SUPERIOR + PESQUISA INTELIGENTE (FIXO NO MOBILE, ROLAGEM NORMAL NO DESKTOP) -->
   <header class="sticky top-0 md:static z-40 bg-[#031238] shadow-md gpu-layer">
     <div class="w-full max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto relative">
-      
+
       <!-- Botões Flutuantes Semitransparentes (Compartilhar, QR Code Único, Acesso ADM) -->
       <div class="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-3 sm:px-5 pt-2.5 safe-top pointer-events-none">
         <div class="pointer-events-auto flex items-center gap-1.5">
@@ -252,26 +278,22 @@
             Mostrar todos
           </button>
         </div>
-        <div id="categoriesGrid" class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
-          <!-- 19 Departamentos renderizados via JS -->
-        </div>
+        <div id="categoriesGrid" class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2"></div>
       </div>
 
-      <!-- Subcategorias dinâmicas (ex: Venda vs Serviços em Carros e Motos) -->
+      <!-- Subcategorias dinâmicas -->
       <div id="subcategoriesBar" class="hidden px-3 sm:px-5 py-2 border-t border-gray-200 flex items-center gap-1.5 overflow-x-auto no-scrollbar bg-white"></div>
     </section>
 
-    <!-- CARROSSEL DINÂMICO DE BANNERS DO TOPO (AUTO-SLIDE 4s + ARRASTE + SINCRONIZADO POR NICHO E LOJA) -->
+    <!-- CARROSSEL DINÂMICO DE BANNERS DO TOPO -->
     <section id="promoBannersSection" class="px-2.5 sm:px-5 pt-2.5 hidden">
       <div class="w-full bg-slate-950 rounded-2xl overflow-hidden border border-gray-200 shadow-2xs relative">
-        <div id="promoBannersTrack" onscroll="handleBannerScroll()" class="carousel-track flex overflow-x-auto no-scrollbar">
-          <!-- Banners clicáveis renderizados dinamicamente -->
-        </div>
+        <div id="promoBannersTrack" onscroll="handleBannerScroll()" class="carousel-track flex overflow-x-auto no-scrollbar"></div>
         <div id="promoBannersDots" class="absolute bottom-2 inset-x-0 flex justify-center gap-1.5 pointer-events-none"></div>
       </div>
     </section>
 
-    <!-- BARRA DE CONTROLE DA VITRINE (ORDENAÇÃO + MODO GRADE/LISTA + LIMPAR FILTRO) -->
+    <!-- BARRA DE CONTROLE DA VITRINE -->
     <div class="px-2.5 sm:px-5 pt-2.5">
       <div class="bg-white rounded-xl border border-gray-200/90 px-3 py-2 flex items-center justify-between gap-2">
         <div class="flex items-center gap-1.5 min-w-0">
@@ -296,7 +318,7 @@
       </div>
     </div>
 
-    <!-- VITRINE DE PRODUTOS, VÍDEOS CURTOS 15s E SERVIÇOS (GRADE RESPONSIVA COM ARTE PREENCHENDO O CARD) -->
+    <!-- VITRINE DE PRODUTOS, VÍDEOS CURTOS 15s E SERVIÇOS -->
     <main id="feedContainer" class="w-full px-2 sm:px-4 pt-2.5 pb-4 min-h-[55vh]">
       <div class="py-24 px-6 text-center text-gray-400 bg-white rounded-2xl">
         <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-blue-600"></i>
@@ -345,7 +367,7 @@
     </div>
   </nav>
 
-  <!-- MODAL PÁGINA COMPLETA DE DETALHES DO ANÚNCIO (FOTOS OU VÍDEO 15s) -->
+  <!-- MODAL PÁGINA COMPLETA DE DETALHES DO ANÚNCIO -->
   <div id="productDetailModal" class="fixed inset-0 z-50 bg-[#F5F5F5] hidden flex-col safe-top safe-bottom">
     <div class="bg-[#031238] text-white px-3.5 py-3 flex items-center justify-between gap-2 max-w-2xl md:max-w-4xl w-full mx-auto">
       <button onclick="closeProductDetail()" class="px-3 py-1.5 rounded-full bg-white/15 flex items-center gap-1.5 text-xs font-bold">
@@ -511,7 +533,7 @@
         <button onclick="closeModal('loginModal')" class="text-gray-400 hover:text-gray-700 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
       <p class="text-xs text-gray-500 mb-4">Insira a senha de administrador para gerir anúncios, banners e configurações.</p>
-      
+
       <form onsubmit="event.preventDefault(); verifyAdminLogin();" class="space-y-3">
         <div class="relative">
           <input type="password" id="adminPasswordInput" autocomplete="current-password" placeholder="••••••••"
@@ -534,7 +556,7 @@
   <!-- MODAL PAINEL ADMINISTRATIVO EXPANDIDO -->
   <div id="adminModal" class="fixed inset-0 z-50 bg-black/65 hidden items-end sm:items-center justify-center">
     <div class="bg-white w-full max-w-2xl rounded-t-3xl sm:rounded-3xl max-h-[93vh] flex flex-col shadow-2xl">
-      
+
       <div class="px-4 py-3.5 border-b border-gray-200 flex items-center justify-between gap-2">
         <button type="button" onclick="cancelAndReturnFromAdmin()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5 transition flex-shrink-0">
           <i class="fa-solid fa-arrow-left"></i>
@@ -551,7 +573,6 @@
         </button>
       </div>
 
-      <!-- Navegação Interna do Admin -->
       <div class="flex overflow-x-auto no-scrollbar border-b border-gray-200 text-xs font-bold bg-gray-50">
         <button type="button" onclick="switchAdminTab('newPost')" id="admTab-newPost" class="flex-1 px-4 py-3 border-b-2 border-blue-700 text-blue-700 whitespace-nowrap">
           + Novo Anúncio
@@ -564,10 +585,9 @@
         </button>
       </div>
 
-      <!-- Conteúdo Scrollável Admin -->
       <div class="p-4 sm:p-6 overflow-y-auto space-y-4">
 
-        <!-- ABA 1: CRIAR OU EDITAR ANÚNCIO (FOTOS OU VÍDEO CURTO DE 15s + INSTAGRAM + WHATSAPP) -->
+        <!-- ABA 1: CRIAR OU EDITAR ANÚNCIO -->
         <form id="newPostForm" onsubmit="handleSavePost(event)" class="space-y-4">
           <input type="hidden" id="editingPostId" value="" />
 
@@ -624,7 +644,6 @@
             </div>
           </div>
 
-          <!-- SELETOR DE FOTOS OU VÍDEO CURTO DE 15 SEGUNDOS -->
           <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
             <label class="block text-xs font-bold text-gray-800">Mídia da Divulgação (Fotos HD ou Vídeo Curto 15s) *</label>
 
@@ -646,7 +665,6 @@
             <p id="postMediaStatus" class="text-[11px] font-bold text-blue-700 hidden"></p>
             <div id="imagePreviewGrid" class="grid grid-cols-5 gap-1.5"></div>
 
-            <!-- RECORTADOR DE VÍDEO 15 SEGUNDOS -->
             <div id="postVideoTrimmerBox" class="hidden p-3.5 rounded-xl bg-slate-900 text-white space-y-3">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-bold text-amber-400"><i class="fa-solid fa-scissors mr-1"></i> Recorte de 15s para o Feed</span>
@@ -719,7 +737,7 @@
 
           <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
             <label class="block text-xs font-bold text-slate-800">Canais de Atendimento da Loja (Exibidos no Card)</label>
-            
+
             <div>
               <label class="block text-[11px] font-bold text-gray-600 mb-1">
                 <i class="fa-brands fa-whatsapp text-emerald-600 mr-1"></i> WhatsApp para Conversar com Vendedor (Link ou DDD + Número)
@@ -814,7 +832,7 @@
 
         <!-- ABA 3: CAPA PANORÂMICA DO TOPO & CONFIGURAÇÕES -->
         <form id="settingsForm" onsubmit="handleSaveSettings(event)" class="space-y-4 hidden">
-          
+
           <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
             <label class="block text-xs font-bold text-slate-800">Capa Superior / Slogan da Plataforma</label>
             <div class="grid grid-cols-2 gap-2">
@@ -839,7 +857,7 @@
                 <span>Escolher Capa Panorâmica (Alta Definição)</span>
               </label>
               <input type="file" id="cfgLogoInput" accept="image/*" onchange="handleLogoUpload(event)" class="sr-only" />
-              
+
               <div id="cfgLogoPreviewBox" class="mt-2.5 hidden flex-col gap-2 bg-[#031238] p-2 rounded-xl border border-blue-900">
                 <img id="cfgLogoPreviewImg" src="" class="w-full h-auto max-h-28 object-contain rounded-lg" />
                 <button type="button" onclick="removeLogoImage()" class="text-xs text-red-400 font-semibold hover:underline self-end">Remover capa</button>
@@ -905,7 +923,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // 19 DEPARTAMENTOS COMPLETOS DO MARKETPLACE TERÊ SHOPPING
     const DEPARTMENTS = [
       { id: "eletronicos", name: "Eletrônicos", short: "Eletrônicos", icon: "fa-mobile-screen" },
       { id: "computacao", name: "Computação", short: "Computação", icon: "fa-laptop" },
@@ -1116,6 +1133,70 @@
     let isUserTouchingBanner = false;
     let visibleBannersCache = [];
     let qrCodeGenerated = false;
+
+    // ALERTA TEMPORÁRIO COM SINO FLUTUANTE AO CHEGAR NOVO POST
+    let knownPostIds = new Set();
+    let initialPostsLoaded = false;
+    let floatingBellTimeout = null;
+    let latestAlertedPostId = "";
+
+    function playNewPostChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(784, now);
+        osc.frequency.setValueAtTime(1046.5, now + 0.14);
+        gain.gain.setValueAtTime(0.001, now);
+        gain.gain.exponentialRampToValueAtTime(0.18, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.38);
+      } catch (_) {}
+    }
+
+    function triggerFloatingNewPostAlert(post) {
+      if (!post) return;
+      latestAlertedPostId = post.id;
+      const bellWrap = document.getElementById("floatingNewPostBell");
+      const bellText = document.getElementById("floatingNewPostBellText");
+      if (!bellWrap || !bellText) return;
+
+      bellText.textContent = `Novo: ${post.title || "Anúncio na vitrine"}`;
+      bellWrap.classList.remove("hidden");
+      playNewPostChime();
+      if (navigator.vibrate) {
+        try { navigator.vibrate([120, 60, 120]); } catch (_) {}
+      }
+
+      if (floatingBellTimeout) clearTimeout(floatingBellTimeout);
+      floatingBellTimeout = setTimeout(() => {
+        dismissFloatingPostBell();
+      }, 7000);
+    }
+
+    window.dismissFloatingPostBell = function() {
+      if (floatingBellTimeout) {
+        clearTimeout(floatingBellTimeout);
+        floatingBellTimeout = null;
+      }
+      const bellWrap = document.getElementById("floatingNewPostBell");
+      if (bellWrap) bellWrap.classList.add("hidden");
+    };
+
+    window.openLatestAlertedPost = function() {
+      const targetId = latestAlertedPostId;
+      dismissFloatingPostBell();
+      if (targetId && posts.some(p => p.id === targetId)) {
+        openProductDetail(targetId);
+      }
+    };
 
     function formatSecondsMMSS(sec) {
       const s = Math.max(0, Math.floor(sec || 0));
@@ -1416,13 +1497,20 @@
     const postsRef = ref(db, "posts");
     onValue(postsRef, (snapshot) => {
       const data = snapshot.val();
-      if (data) {
-        posts = Object.entries(data)
-          .map(([id, val]) => ({ id, ...val }))
-          .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-      } else {
-        posts = [];
+      const loaded = data
+        ? Object.entries(data).map(([id, val]) => ({ id, ...val })).sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+        : [];
+
+      if (initialPostsLoaded) {
+        const brandNewPosts = loaded.filter(p => !knownPostIds.has(p.id));
+        if (brandNewPosts.length > 0) {
+          triggerFloatingNewPostAlert(brandNewPosts[0]);
+        }
       }
+
+      knownPostIds = new Set(loaded.map(p => p.id));
+      initialPostsLoaded = true;
+      posts = loaded;
       renderFeed();
     });
 
@@ -1447,7 +1535,6 @@
       }
     }
 
-    // BANNERS DINÂMICOS DO TOPO: SINCRONIZADOS COM CATEGORIA + VITRINE DA LOJA
     function startBannerAutoPlay() {
       if (bannerAutoPlayTimer) clearInterval(bannerAutoPlayTimer);
       if (visibleBannersCache.length <= 1) return;
@@ -1599,7 +1686,28 @@
       return `https://wa.me/${digits}?text=${encodedMsg}`;
     }
 
-    // PÁGINA COMPLETA DE DETALHES (SUPORTA FOTOS E VÍDEO CURTO DE 15s)
+    // ARRASTAR PARA O LADO OPCIONAL QUANDO HOUVER MAIS DE 2 FOTOS NA GRADE
+    window.handleGridCardSlideTap = function(event, trackEl, postId) {
+      if (!trackEl) return;
+      const startLeft = Number(trackEl.dataset.pointerStartScrollLeft || 0);
+      const moved = Math.abs(trackEl.scrollLeft - startLeft);
+      if (moved < 8) {
+        openProductDetail(postId);
+      }
+    };
+
+    window.markGridTrackStart = function(trackEl) {
+      if (trackEl) trackEl.dataset.pointerStartScrollLeft = String(trackEl.scrollLeft || 0);
+    };
+
+    window.updateGridCardPhotoCounter = function(trackEl, postId, total) {
+      if (!trackEl || !trackEl.clientWidth) return;
+      const idx = Math.min(total - 1, Math.max(0, Math.round(trackEl.scrollLeft / trackEl.clientWidth)));
+      const badge = document.getElementById(`grid-photo-counter-${postId}`);
+      if (badge) badge.textContent = `${idx + 1}/${total}`;
+    };
+
+    // PÁGINA COMPLETA DE DETALHES
     window.openProductDetail = function(postId) {
       const post = posts.find(p => p.id === postId);
       if (!post) return;
@@ -1794,7 +1902,7 @@
       modal.classList.remove("flex");
     };
 
-    // RENDERIZAÇÃO DO FEED (GRADE RESPONSIVA 2 / 3 / 4 COLUNAS + ARTE PREENCHENDO O CARD)
+    // RENDERIZAÇÃO DO FEED
     function renderFeed() {
       updateSavedBadge();
       updateWidgetsVisualState();
@@ -1901,10 +2009,10 @@
               const safeTitle = (post.title || "").replace(/'/g, "");
               const hasWhats = Boolean(post.whatsapp && post.whatsapp.trim());
               const hasInsta = Boolean(post.instagram && post.instagram.trim());
+              const canSwipeInGrid = !hasVideo && images.length > 2;
 
               return `
                 <article class="bg-white rounded-2xl border border-gray-200/90 overflow-hidden shadow-2xs flex flex-col justify-between relative">
-                  <!-- Botão Salvar Flutuante -->
                   <button onclick="event.stopPropagation(); toggleSave('${post.id}')" title="Salvar"
                     class="z-10 absolute top-2 right-2 w-7 h-7 rounded-full bg-white/95 shadow-xs border border-gray-200 flex items-center justify-center text-xs ${isSaved ? 'text-red-500' : 'text-gray-500'}">
                     <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
@@ -1917,9 +2025,8 @@
                     </div>
                   ` : ""}
 
-                  <!-- Arte / Foto / Vídeo Preenchendo 100% do Card -->
-                  <div onclick="openProductDetail('${post.id}')" class="relative aspect-[4/5] w-full bg-white flex items-center justify-center overflow-hidden cursor-pointer border-b border-gray-100">
-                    ${hasVideo ? `
+                  ${hasVideo ? `
+                    <div onclick="openProductDetail('${post.id}')" class="relative aspect-[4/5] w-full bg-white flex items-center justify-center overflow-hidden cursor-pointer border-b border-gray-100">
                       <video id="grid-vid-${post.id}" src="${post.videoData}" loop muted playsinline webkit-playsinline preload="metadata"
                         class="w-full h-full object-cover"></video>
                       <span class="absolute bottom-2 left-2 bg-amber-400 text-[#031238] text-[9px] font-black px-1.5 py-0.5 rounded-md pointer-events-none shadow-xs">
@@ -1929,7 +2036,28 @@
                         class="z-10 absolute bottom-2 right-2 w-6 h-6 rounded-full bg-black/75 text-white flex items-center justify-center text-[10px] border border-white/20">
                         <i id="grid-audio-icon-${post.id}" class="fa-solid fa-volume-xmark"></i>
                       </button>
-                    ` : `
+                    </div>
+                  ` : canSwipeInGrid ? `
+                    <div class="relative aspect-[4/5] w-full bg-white overflow-hidden border-b border-gray-100">
+                      <div
+                        onpointerdown="markGridTrackStart(this)"
+                        onscroll="updateGridCardPhotoCounter(this, '${post.id}', ${images.length})"
+                        onclick="handleGridCardSlideTap(event, this, '${post.id}')"
+                        class="carousel-track flex w-full h-full overflow-x-auto no-scrollbar cursor-pointer">
+                        ${images.map((imgSrc, sIdx) => `
+                          <div class="carousel-slide w-full h-full flex-shrink-0">
+                            <img src="${imgSrc}" alt="${safeTitle}" loading="${idx < 4 && sIdx === 0 ? 'eager' : 'lazy'}" decoding="async"
+                              class="w-full h-full object-cover select-none" />
+                          </div>
+                        `).join("")}
+                      </div>
+                      <span id="grid-photo-counter-${post.id}"
+                        class="pointer-events-none absolute bottom-2 right-2 bg-black/75 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+                        1/${images.length}
+                      </span>
+                    </div>
+                  ` : `
+                    <div onclick="openProductDetail('${post.id}')" class="relative aspect-[4/5] w-full bg-white flex items-center justify-center overflow-hidden cursor-pointer border-b border-gray-100">
                       <img src="${coverImg}" alt="${safeTitle}" loading="${idx < 4 ? 'eager' : 'lazy'}" decoding="async"
                         class="w-full h-full object-cover" />
                       ${images.length > 1 ? `
@@ -1937,10 +2065,9 @@
                           +${images.length - 1}
                         </span>
                       ` : ""}
-                    `}
-                  </div>
+                    </div>
+                  `}
 
-                  <!-- Informações Comerciais Compactas -->
                   <div onclick="openProductDetail('${post.id}')" class="p-2.5 flex-1 flex flex-col justify-between space-y-1 cursor-pointer">
                     <div class="space-y-0.5">
                       <span class="inline-block text-[8px] font-extrabold px-1.5 py-0.5 rounded ${info.badgeClass}">${info.badge}</span>
@@ -1957,7 +2084,6 @@
                     </div>
                   </div>
 
-                  <!-- Botões Divididos na Base: Conversar + Instagram -->
                   <div class="px-2 pb-2 flex items-center gap-1">
                     ${hasWhats ? `
                       <button onclick="openPostWhatsapp('${post.id}')" title="Conversar com Vendedor"
@@ -2278,7 +2404,7 @@
       });
     };
 
-    // VÍDEO CURTO DE 15s DENTRO DE + NOVO ANÚNCIO
+    // VÍDEO CURTO DE 15s
     window.handlePostVideoLoaded = function(event) {
       const file = event.target.files[0];
       const statusEl = document.getElementById("postMediaStatus");
@@ -2829,9 +2955,12 @@
         const whatsapp = document.getElementById("postWhatsapp").value.trim();
 
         const existingPost = editingId ? posts.find(p => p.id === editingId) : null;
-        const targetRef = editingId ? ref(db, `posts/${editingId}`) : push(ref(db, "posts"));
+        const newRef = editingId ? ref(db, `posts/${editingId}`) : push(ref(db, "posts"));
+        if (!editingId && newRef.key) {
+          knownPostIds.add(newRef.key);
+        }
 
-        await set(targetRef, {
+        await set(newRef, {
           type: legacyType,
           department,
           partnerName,
