@@ -161,7 +161,7 @@
     </div>
   </div>
 
-  <!-- CABEÇALHO SUPERIOR + PESQUISA INTELIGENTE -->
+  <!-- CABEÇALHO SUPERIOR + PESQUISA INTELIGENTE (FIXO NO MOBILE, ROLAGEM NORMAL NO DESKTOP) -->
   <header class="sticky top-0 md:static z-40 bg-[#031238] shadow-md gpu-layer">
     <div class="w-full max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto relative">
 
@@ -244,7 +244,7 @@
     </div>
   </header>
 
-  <!-- CONTENTOR PRINCIPAL RESPONSIVO -->
+  <!-- CONTENTOR PRINCIPAL RESPONSIVO (CELULAR, TABLET E COMPUTADOR) -->
   <div class="w-full max-w-2xl md:max-w-4xl lg:max-w-6xl mx-auto md:my-3 md:rounded-2xl md:overflow-hidden md:shadow-md md:border md:border-gray-200/80 bg-[#F5F5F5]">
 
     <!-- BARRA DE WIDGETS PADRONIZADOS EM BRANCO: CATEGORIAS | PRODUTOS | SERVIÇOS -->
@@ -318,7 +318,7 @@
       </div>
     </div>
 
-    <!-- VITRINE DE PRODUTOS, OFERTAS RELÂMPAGO, VÍDEOS CURTOS 15s E SERVIÇOS -->
+    <!-- VITRINE DE PRODUTOS, VÍDEOS CURTOS 15s E SERVIÇOS -->
     <main id="feedContainer" class="w-full px-2 sm:px-4 pt-2.5 pb-4 min-h-[55vh]">
       <div class="py-24 px-6 text-center text-gray-400 bg-white rounded-2xl">
         <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3 text-blue-600"></i>
@@ -584,16 +584,13 @@
       </div>
 
       <div class="flex overflow-x-auto no-scrollbar border-b border-gray-200 text-xs font-bold bg-gray-50">
-        <button type="button" onclick="switchAdminTab('newPost')" id="admTab-newPost" class="flex-1 px-3 py-3 border-b-2 border-blue-700 text-blue-700 whitespace-nowrap">
+        <button type="button" onclick="switchAdminTab('newPost')" id="admTab-newPost" class="flex-1 px-4 py-3 border-b-2 border-blue-700 text-blue-700 whitespace-nowrap">
           + Novo Anúncio
         </button>
-        <button type="button" onclick="switchAdminTab('flashDeals')" id="admTab-flashDeals" class="flex-1 px-3 py-3 border-b-2 border-transparent text-gray-500 whitespace-nowrap">
-          <i class="fa-solid fa-bolt text-amber-500 mr-1"></i>Relâmpago
-        </button>
-        <button type="button" onclick="switchAdminTab('banners')" id="admTab-banners" class="flex-1 px-3 py-3 border-b-2 border-transparent text-gray-500 whitespace-nowrap">
+        <button type="button" onclick="switchAdminTab('banners')" id="admTab-banners" class="flex-1 px-4 py-3 border-b-2 border-transparent text-gray-500 whitespace-nowrap">
           Banners Topo
         </button>
-        <button type="button" onclick="switchAdminTab('settings')" id="admTab-settings" class="flex-1 px-3 py-3 border-b-2 border-transparent text-gray-500 whitespace-nowrap">
+        <button type="button" onclick="switchAdminTab('settings')" id="admTab-settings" class="flex-1 px-4 py-3 border-b-2 border-transparent text-gray-500 whitespace-nowrap">
           Capa
         </button>
       </div>
@@ -778,99 +775,7 @@
           </div>
         </form>
 
-        <!-- ABA 2: OFERTAS RELÂMPAGO NO FEED -->
-        <div id="flashDealsForm" class="space-y-4 hidden">
-          <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 space-y-3">
-            <div class="flex items-center justify-between gap-2">
-              <div>
-                <h3 class="text-xs font-black uppercase text-amber-950 flex items-center gap-1.5">
-                  <i class="fa-solid fa-bolt text-amber-600"></i> Cartão Ofertas Relâmpago
-                </h3>
-                <p class="text-[11px] text-amber-900/80">Exibido junto aos posts da vitrine com cronômetro regressivo.</p>
-              </div>
-              <label class="inline-flex items-center gap-2 cursor-pointer bg-white px-3 py-1.5 rounded-full border border-amber-300 shadow-2xs">
-                <input type="checkbox" id="flashDealsActiveToggle" onchange="toggleFlashDealsActiveNow(this.checked)" class="accent-amber-500 w-4 h-4" />
-                <span class="text-xs font-extrabold text-slate-800">Ativo</span>
-              </label>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <div>
-                <label class="block text-[11px] font-bold text-gray-700 mb-1">Duração do Cronômetro</label>
-                <select id="flashDealsDurationHours" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold bg-white">
-                  <option value="2">2 horas</option>
-                  <option value="4">4 horas</option>
-                  <option value="6" selected>6 horas</option>
-                  <option value="12">12 horas</option>
-                  <option value="24">24 horas</option>
-                </select>
-              </div>
-              <div class="flex items-end">
-                <button type="button" onclick="saveFlashDealsTimerConfig()" class="w-full py-2 px-3 rounded-xl bg-[#081c45] text-white font-bold text-xs hover:bg-blue-900 transition">
-                  Iniciar / Reiniciar Relógio
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Adicionar Item Relâmpago a partir de um Post Existente ou Manual -->
-          <form onsubmit="handleAddFlashDealItem(event)" class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-            <p class="text-xs font-extrabold text-slate-800">Adicionar Produto às Ofertas Relâmpago</p>
-
-            <div>
-              <label class="block text-[11px] font-bold text-gray-600 mb-1">Importar de um Anúncio da Vitrine (Opcional)</label>
-              <select id="flashPostSelector" onchange="fillFlashItemFromPost(this.value)" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs font-semibold bg-white">
-                <option value="">-- Criar item manual ou selecionar post --</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-[11px] font-bold text-gray-600 mb-1">Foto do Produto *</label>
-              <label for="flashItemImageInput" class="flex items-center justify-center gap-2 w-full py-2.5 px-3 rounded-xl border-2 border-dashed border-amber-400 bg-amber-50 text-amber-950 text-xs font-bold cursor-pointer">
-                <i class="fa-solid fa-camera"></i>
-                <span>Escolher Foto Quadrada/Vertical</span>
-              </label>
-              <input type="file" id="flashItemImageInput" accept="image/*" onchange="handleFlashItemImageUpload(event)" class="sr-only" />
-              <div id="flashItemPreviewBox" class="hidden mt-2 flex items-center gap-2">
-                <img id="flashItemPreviewImg" src="" class="w-16 h-16 rounded-xl object-cover border border-gray-300 bg-white" />
-                <span class="text-[11px] text-emerald-700 font-bold">Imagem pronta!</span>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-[11px] font-bold text-gray-600 mb-1">Nome / Título do Item *</label>
-              <input type="text" id="flashItemTitle" required placeholder="Ex: Porta-Utensílios Vaquinha Cerâmica"
-                class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs bg-white" />
-            </div>
-
-            <div class="grid grid-cols-2 gap-2.5">
-              <div>
-                <label class="block text-[11px] font-bold text-gray-600 mb-1">Preço Antigo (Riscado) *</label>
-                <input type="text" id="flashItemOldPrice" required placeholder="Ex: R$ 109"
-                  class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs bg-white" />
-              </div>
-              <div>
-                <label class="block text-[11px] font-bold text-gray-600 mb-1">Preço Relâmpago *</label>
-                <input type="text" id="flashItemPrice" required placeholder="Ex: R$ 95,99"
-                  class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs bg-white" />
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-[11px] font-bold text-gray-600 mb-1">WhatsApp Direto (Caso não vinculado a um post)</label>
-              <input type="text" id="flashItemWhatsapp" placeholder="Ex: 86999999999"
-                class="w-full border border-gray-300 rounded-xl px-3 py-2 text-xs bg-white" />
-            </div>
-
-            <button type="submit" id="saveFlashItemBtn" class="w-full bg-amber-400 hover:bg-amber-300 text-[#031238] font-black py-2.5 rounded-xl text-xs shadow-xs transition">
-              + Adicionar Item à Oferta Relâmpago
-            </button>
-          </form>
-
-          <div id="adminFlashItemsList" class="space-y-2"></div>
-        </div>
-
-        <!-- ABA 3: BANNERS PROMOCIONAIS ROTATIVOS DO TOPO -->
+        <!-- ABA 2: BANNERS PROMOCIONAIS ROTATIVOS DO TOPO -->
         <form id="bannersForm" onsubmit="handleSavePromoBanner(event)" class="space-y-4 hidden">
           <div class="p-3 rounded-xl bg-blue-50 border border-blue-200 text-[11px] text-blue-950">
             <b>Banners Inteligentes no Topo:</b> Ao vincular um <b>Departamento</b>, o banner aparece automaticamente quando o cliente clicar naquela categoria. Ao informar o <b>Nome da Loja</b>, clicar no banner abre todas as publicações daquela loja em grade.
@@ -935,7 +840,7 @@
           <div id="adminActiveBannersList" class="pt-3 border-t border-gray-200 space-y-2"></div>
         </form>
 
-        <!-- ABA 4: CAPA PANORÂMICA DO TOPO -->
+        <!-- ABA 3: CAPA PANORÂMICA DO TOPO -->
         <form id="settingsForm" onsubmit="handleSaveSettings(event)" class="space-y-4 hidden">
 
           <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
@@ -1120,18 +1025,6 @@
       return Math.round(((oldVal - curVal) / oldVal) * 100);
     }
 
-    function formatFlashPriceHTML(priceStr) {
-      const raw = String(priceStr || "Sob consulta").trim();
-      const match = raw.match(/^(R\$\s*)?([\d.]+)[,.](\d{2})$/);
-      if (match) {
-        const prefix = match[1] || "R$ ";
-        const whole = match[2];
-        const cents = match[3];
-        return `<span class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-none">${prefix}${whole}<sup class="text-xs font-extrabold ml-0.5">${cents}</sup></span>`;
-      }
-      return `<span class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-none">${raw}</span>`;
-    }
-
     const WINDOW_DURATION_SEC = 15;
     const MAX_DIRECT_FILE_BYTES = 7.2 * 1024 * 1024;
     const MAX_RAW_VIDEO_BYTES = 120 * 1024 * 1024;
@@ -1212,15 +1105,6 @@
     let config = { ...DEFAULT_CONFIG };
     let posts = [];
     let promoBanners = [];
-    let flashDealsState = {
-      active: false,
-      endsAt: 0,
-      items: []
-    };
-    let flashCountdownInterval = null;
-    let pendingFlashItemImage = "";
-    let linkedFlashPostId = "";
-
     let savedIds = JSON.parse(localStorage.getItem("tereshop_saved")) || [];
     let searchHistory = JSON.parse(localStorage.getItem("tereshop_search_history")) || [];
 
@@ -1632,26 +1516,6 @@
       renderAdminBannersList();
     });
 
-    const flashDealsRef = ref(db, "flashDeals");
-    onValue(flashDealsRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const val = snapshot.val() || {};
-        const rawItems = val.items && typeof val.items === "object"
-          ? Object.entries(val.items).map(([id, item]) => ({ id, ...(item || {}) }))
-          : [];
-        const itemsList = rawItems.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-        flashDealsState = {
-          active: Boolean(val.active),
-          endsAt: Number(val.endsAt || 0),
-          items: itemsList
-        };
-      } else {
-        flashDealsState = { active: false, endsAt: 0, items: [] };
-      }
-      syncAdminFlashDealsUI();
-      renderFeed();
-    });
-
     const postsRef = ref(db, "posts");
     onValue(postsRef, (snapshot) => {
       const data = snapshot.val();
@@ -1669,7 +1533,6 @@
       knownPostIds = new Set(loaded.map(p => p.id));
       initialPostsLoaded = true;
       posts = loaded;
-      populateFlashPostSelector();
       renderFeed();
     });
 
@@ -1880,135 +1743,6 @@
       if (badge) badge.textContent = `${nextIdx + 1}/${total}`;
     };
 
-    // CARTÃO OFERTAS RELÂMPAGO JUNTO AOS POSTS
-    function getFlashRemainingParts() {
-      const targetEnd = Number(flashDealsState.endsAt || 0);
-      if (!targetEnd || targetEnd <= Date.now()) {
-        return { expired: true, hh: "00", mm: "00", ss: "00" };
-      }
-      const diffMs = Math.max(0, targetEnd - Date.now());
-      const totalSec = Math.floor(diffMs / 1000);
-      const hours = Math.floor(totalSec / 3600);
-      const mins = Math.floor((totalSec % 3600) / 60);
-      const secs = totalSec % 60;
-      return {
-        expired: false,
-        hh: String(hours).padStart(2, "0"),
-        mm: String(mins).padStart(2, "0"),
-        ss: String(secs).padStart(2, "0")
-      };
-    }
-
-    function updateFlashCountdownDOM() {
-      const hhEl = document.getElementById("flash-timer-hh");
-      const mmEl = document.getElementById("flash-timer-mm");
-      const ssEl = document.getElementById("flash-timer-ss");
-      if (!hhEl || !mmEl || !ssEl) return;
-
-      const { hh, mm, ss } = getFlashRemainingParts();
-      hhEl.textContent = hh;
-      mmEl.textContent = mm;
-      ssEl.textContent = ss;
-    }
-
-    function startFlashDealsTicker() {
-      if (flashCountdownInterval) {
-        clearInterval(flashCountdownInterval);
-        flashCountdownInterval = null;
-      }
-      updateFlashCountdownDOM();
-      if (!flashDealsState.active || !flashDealsState.items || flashDealsState.items.length === 0) return;
-
-      flashCountdownInterval = setInterval(() => {
-        updateFlashCountdownDOM();
-      }, 1000);
-    }
-
-    function renderFlashDealsCardHTML() {
-      if (!flashDealsState.active || !Array.isArray(flashDealsState.items) || flashDealsState.items.length === 0) {
-        return "";
-      }
-      const { expired, hh, mm, ss } = getFlashRemainingParts();
-      if (expired) {
-        return "";
-      }
-
-      return `
-        <section aria-label="Ofertas Relâmpago" class="my-3 rounded-2xl bg-[#FFE600] p-2.5 sm:p-3.5 shadow-sm border border-amber-400">
-          <!-- Cabeçalho Amarelo com Título e Cronômetro -->
-          <div class="flex items-center justify-between gap-2 px-1 pb-2.5">
-            <h2 class="font-black text-base sm:text-xl leading-none tracking-tight text-[#111111] uppercase">
-              OFERTAS<br/>RELÂMPAGO
-            </h2>
-
-            <div class="flex items-center gap-1 text-slate-900 font-black">
-              <span id="flash-timer-hh" class="bg-white text-[#111111] text-xs sm:text-sm font-black px-2 py-1.5 rounded-lg shadow-2xs min-w-[30px] text-center">${hh}</span>
-              <span class="text-sm font-black">:</span>
-              <span id="flash-timer-mm" class="bg-white text-[#111111] text-xs sm:text-sm font-black px-2 py-1.5 rounded-lg shadow-2xs min-w-[30px] text-center">${mm}</span>
-              <span class="text-sm font-black">:</span>
-              <span id="flash-timer-ss" class="bg-white text-[#111111] text-xs sm:text-sm font-black px-2 py-1.5 rounded-lg shadow-2xs min-w-[30px] text-center">${ss}</span>
-            </div>
-          </div>
-
-          <!-- Lista Branca Interna dos Itens Relâmpago -->
-          <div class="bg-white rounded-xl p-2.5 sm:p-3.5 divide-y divide-gray-100 shadow-2xs">
-            ${flashDealsState.items.map(item => {
-              const discountPct = calcDiscountPercent(item.oldPrice, item.price);
-              return `
-                <div onclick="handleFlashDealItemClick('${item.id}')"
-                  class="py-2.5 first:pt-0.5 last:pb-0.5 flex items-center gap-3 sm:gap-4 cursor-pointer active:opacity-85 transition">
-                  <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-gray-200/80">
-                    <img src="${item.imageData || './icon-512.png'}" alt="${(item.title || '').replace(/"/g, '')}" loading="lazy"
-                      class="w-full h-full object-cover" />
-                  </div>
-
-                  <div class="flex-1 min-w-0 space-y-1">
-                    ${discountPct > 0 ? `
-                      <span class="inline-block bg-[#FFF08A] text-[#111111] text-[11px] sm:text-xs font-extrabold px-2 py-0.5 rounded-md">
-                        ${discountPct}% OFF
-                      </span>
-                    ` : `
-                      <span class="inline-block bg-[#FFF08A] text-[#111111] text-[11px] sm:text-xs font-extrabold px-2 py-0.5 rounded-md">
-                        OFERTA RELÂMPAGO
-                      </span>
-                    `}
-
-                    ${item.oldPrice ? `
-                      <p class="text-xs sm:text-sm text-gray-400 line-through leading-none">${item.oldPrice}</p>
-                    ` : ""}
-
-                    <div>
-                      ${formatFlashPriceHTML(item.price)}
-                    </div>
-
-                    <p class="text-[11px] sm:text-xs font-semibold text-slate-600 truncate">${item.title || ""}</p>
-                  </div>
-                </div>
-              `;
-            }).join("")}
-          </div>
-        </section>
-      `;
-    }
-
-    window.handleFlashDealItemClick = function(itemId) {
-      const item = flashDealsState.items.find(i => i.id === itemId);
-      if (!item) return;
-
-      if (item.linkedPostId && posts.some(p => p.id === item.linkedPostId)) {
-        openProductDetail(item.linkedPostId);
-        return;
-      }
-
-      if (item.whatsapp && item.whatsapp.trim()) {
-        const msg = `Olá! Vi a Oferta Relâmpago "${item.title}" por ${item.price} na TERÊ SHOPPING e quero aproveitar!`;
-        window.open(resolveWhatsappUrl(item.whatsapp, msg), "_blank");
-        return;
-      }
-
-      showToast(`${item.title} • ${item.price}`);
-    };
-
     // PÁGINA COMPLETA DE DETALHES
     window.openProductDetail = function(postId) {
       const post = posts.find(p => p.id === postId);
@@ -2204,135 +1938,7 @@
       modal.classList.remove("flex");
     };
 
-    // HELPER DE RENDERIZAÇÃO DE UM CARD NA GRADE
-    function renderSingleGridCard(post, idx) {
-      const isSaved = savedIds.includes(post.id);
-      const images = post.images || [];
-      const hasVideo = Boolean(post.videoData && post.videoData.trim());
-      const coverImg = images[0] || "./icon-512.png";
-      const info = getPostClassification(post);
-      const discountPct = calcDiscountPercent(post.oldPrice, post.price);
-      const partnerTitle = (post.partnerName && post.partnerName.trim()) ? post.partnerName.trim() : "TERÊ SHOPPING";
-      const safeTitle = (post.title || "").replace(/'/g, "");
-      const hasWhats = Boolean(post.whatsapp && post.whatsapp.trim());
-      const hasInsta = Boolean(post.instagram && post.instagram.trim());
-      const canSwipeInGrid = !hasVideo && images.length > 2;
-
-      return `
-        <article class="group bg-white rounded-2xl border border-gray-200/90 overflow-hidden shadow-2xs flex flex-col justify-between relative">
-          <button onclick="event.stopPropagation(); toggleSave('${post.id}')" title="Salvar"
-            class="z-10 absolute top-2 right-2 w-7 h-7 rounded-full bg-white/95 shadow-xs border border-gray-200 flex items-center justify-center text-xs ${isSaved ? 'text-red-500' : 'text-gray-500'}">
-            <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-          </button>
-
-          ${isAdminLogged && !isSharedVitrineMode ? `
-            <div class="z-10 absolute top-2 left-2 flex gap-1">
-              <button onclick="event.stopPropagation(); startEditPost('${post.id}')" class="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-pen"></i></button>
-              <button onclick="event.stopPropagation(); deletePost('${post.id}')" class="w-6 h-6 rounded-lg bg-red-600 text-white flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-trash"></i></button>
-            </div>
-          ` : ""}
-
-          ${hasVideo ? `
-            <div onclick="openProductDetail('${post.id}')" class="relative aspect-[4/5] w-full bg-white flex items-center justify-center overflow-hidden cursor-pointer border-b border-gray-100">
-              <video id="grid-vid-${post.id}" src="${post.videoData}" loop muted playsinline webkit-playsinline preload="metadata"
-                class="w-full h-full object-cover"></video>
-              <span class="absolute bottom-2 left-2 bg-amber-400 text-[#031238] text-[9px] font-black px-1.5 py-0.5 rounded-md pointer-events-none shadow-xs">
-                VÍDEO 15s
-              </span>
-              <button onclick="toggleGridVideoAudio(event, '${post.id}')" title="Som"
-                class="z-10 absolute bottom-2 right-2 w-6 h-6 rounded-full bg-black/75 text-white flex items-center justify-center text-[10px] border border-white/20">
-                <i id="grid-audio-icon-${post.id}" class="fa-solid fa-volume-xmark"></i>
-              </button>
-            </div>
-          ` : canSwipeInGrid ? `
-            <div class="relative aspect-[4/5] w-full bg-white overflow-hidden border-b border-gray-100">
-              <div id="grid-track-${post.id}"
-                onpointerdown="markGridTrackStart(this)"
-                onscroll="updateGridCardPhotoCounter(this, '${post.id}', ${images.length})"
-                onclick="handleGridCardSlideTap(event, this, '${post.id}')"
-                class="carousel-track flex w-full h-full overflow-x-auto no-scrollbar cursor-pointer">
-                ${images.map((imgSrc, sIdx) => `
-                  <div class="carousel-slide w-full h-full flex-shrink-0">
-                    <img src="${imgSrc}" alt="${safeTitle}" loading="${idx < 4 && sIdx === 0 ? 'eager' : 'lazy'}" decoding="async"
-                      class="w-full h-full object-cover select-none" />
-                  </div>
-                `).join("")}
-              </div>
-
-              <button type="button" onclick="slideGridCardPhoto(event, '${post.id}', -1, ${images.length})" title="Imagem anterior"
-                aria-label="Imagem anterior"
-                class="z-10 absolute left-1.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/65 hover:bg-black/85 text-white flex items-center justify-center text-[10px] shadow transition sm:opacity-75 sm:group-hover:opacity-100 active:scale-90">
-                <i class="fa-solid fa-chevron-left"></i>
-              </button>
-
-              <button type="button" onclick="slideGridCardPhoto(event, '${post.id}', 1, ${images.length})" title="Próxima imagem"
-                aria-label="Próxima imagem"
-                class="z-10 absolute right-1.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/65 hover:bg-black/85 text-white flex items-center justify-center text-[10px] shadow transition sm:opacity-75 sm:group-hover:opacity-100 active:scale-90">
-                <i class="fa-solid fa-chevron-right"></i>
-              </button>
-
-              <span id="grid-photo-counter-${post.id}"
-                class="pointer-events-none absolute bottom-2 right-2 bg-black/75 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
-                1/${images.length}
-              </span>
-            </div>
-          ` : `
-            <div onclick="openProductDetail('${post.id}')" class="relative aspect-[4/5] w-full bg-white flex items-center justify-center overflow-hidden cursor-pointer border-b border-gray-100">
-              <img src="${coverImg}" alt="${safeTitle}" loading="${idx < 4 ? 'eager' : 'lazy'}" decoding="async"
-                class="w-full h-full object-cover" />
-              ${images.length > 1 ? `
-                <span class="absolute bottom-2 right-2 bg-black/70 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
-                  +${images.length - 1}
-                </span>
-              ` : ""}
-            </div>
-          `}
-
-          <div onclick="openProductDetail('${post.id}')" class="p-2.5 flex-1 flex flex-col justify-between space-y-1 cursor-pointer">
-            <div class="space-y-0.5">
-              <span class="inline-block text-[8px] font-extrabold px-1.5 py-0.5 rounded ${info.badgeClass}">${info.badge}</span>
-              <h2 class="text-xs sm:text-[13px] font-semibold text-slate-800 leading-tight line-clamp-2">${post.title}</h2>
-            </div>
-
-            <div class="pt-0.5">
-              ${post.oldPrice && discountPct > 0 ? `<p class="text-[10px] text-gray-400 line-through leading-none">${post.oldPrice}</p>` : ""}
-              <div class="flex items-baseline gap-1 flex-wrap">
-                <span class="text-sm sm:text-[15px] font-black text-slate-900 leading-tight">${post.price || "Sob consulta"}</span>
-                ${discountPct > 0 ? `<span class="text-[9px] font-extrabold text-[#00A650]">${discountPct}% OFF</span>` : ""}
-              </div>
-              <p class="text-[9px] font-bold text-gray-400 truncate mt-0.5">${partnerTitle}</p>
-            </div>
-          </div>
-
-          <div class="px-2 pb-2 flex items-center gap-1">
-            ${hasWhats ? `
-              <button onclick="openPostWhatsapp('${post.id}')" title="Conversar com Vendedor"
-                class="${hasInsta ? 'flex-1' : 'w-full'} py-1.5 px-1.5 rounded-lg bg-[#00A650] hover:bg-[#008f44] text-white font-extrabold text-[10px] flex items-center justify-center gap-1 transition active:scale-95 truncate">
-                <i class="fa-brands fa-whatsapp text-xs flex-shrink-0"></i>
-                <span class="truncate">${hasInsta ? 'Conversar' : 'Conversar com Vendedor'}</span>
-              </button>
-            ` : ""}
-
-            ${hasInsta ? `
-              <button onclick="openPostInstagram('${post.id}')" title="Instagram da Loja"
-                class="${hasWhats ? 'flex-1' : 'w-full'} py-1.5 px-1.5 rounded-lg bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white font-extrabold text-[10px] flex items-center justify-center gap-1 transition active:scale-95 truncate">
-                <i class="fa-brands fa-instagram text-xs flex-shrink-0"></i>
-                <span class="truncate">Instagram</span>
-              </button>
-            ` : ""}
-
-            ${(!hasWhats && !hasInsta) ? `
-              <button onclick="openProductDetail('${post.id}')"
-                class="w-full py-1.5 px-2 rounded-lg bg-[#031238] text-amber-400 font-extrabold text-[10px] flex items-center justify-center gap-1">
-                <span>Ver Detalhes</span>
-              </button>
-            ` : ""}
-          </div>
-        </article>
-      `;
-    }
-
-    // RENDERIZAÇÃO DO FEED (COM CARTÃO DE OFERTAS RELÂMPAGO JUNTO AOS POSTS)
+    // RENDERIZAÇÃO DO FEED
     function renderFeed() {
       updateSavedBadge();
       updateWidgetsVisualState();
@@ -2415,10 +2021,7 @@
       countBadge.textContent = filtered.length;
       if (clearBtn) clearBtn.classList.toggle("hidden", !hasActiveFilter);
 
-      const showFlashCardInFeed = !hasActiveFilter || currentIntentFilter === "produtos";
-      const flashCardHTML = showFlashCardInFeed ? renderFlashDealsCardHTML() : "";
-
-      if (filtered.length === 0 && !flashCardHTML) {
+      if (filtered.length === 0) {
         container.innerHTML = `
           <div class="py-20 px-6 text-center text-gray-400 bg-white rounded-2xl">
             <i class="fa-solid fa-store-slash text-4xl mb-3 text-slate-300"></i>
@@ -2429,111 +2032,215 @@
       }
 
       if (feedLayoutMode === "grid") {
-        const splitIndex = Math.min(4, filtered.length);
-        const firstBatch = filtered.slice(0, splitIndex);
-        const restBatch = filtered.slice(splitIndex);
-
         container.innerHTML = `
-          ${firstBatch.length > 0 ? `
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
-              ${firstBatch.map((post, idx) => renderSingleGridCard(post, idx)).join("")}
-            </div>
-          ` : ""}
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3">
+            ${filtered.map((post, idx) => {
+              const isSaved = savedIds.includes(post.id);
+              const images = post.images || [];
+              const hasVideo = Boolean(post.videoData && post.videoData.trim());
+              const coverImg = images[0] || "./icon-512.png";
+              const info = getPostClassification(post);
+              const discountPct = calcDiscountPercent(post.oldPrice, post.price);
+              const partnerTitle = (post.partnerName && post.partnerName.trim()) ? post.partnerName.trim() : "TERÊ SHOPPING";
+              const safeTitle = (post.title || "").replace(/'/g, "");
+              const hasWhats = Boolean(post.whatsapp && post.whatsapp.trim());
+              const hasInsta = Boolean(post.instagram && post.instagram.trim());
+              const canSwipeInGrid = !hasVideo && images.length > 2;
 
-          ${flashCardHTML}
+              return `
+                <article class="group bg-white rounded-2xl border border-gray-200/90 overflow-hidden shadow-2xs flex flex-col justify-between relative">
+                  <button onclick="event.stopPropagation(); toggleSave('${post.id}')" title="Salvar"
+                    class="z-10 absolute top-2 right-2 w-7 h-7 rounded-full bg-white/95 shadow-xs border border-gray-200 flex items-center justify-center text-xs ${isSaved ? 'text-red-500' : 'text-gray-500'}">
+                    <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                  </button>
 
-          ${restBatch.length > 0 ? `
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 mt-2 sm:mt-3">
-              ${restBatch.map((post, idx) => renderSingleGridCard(post, idx + splitIndex)).join("")}
-            </div>
-          ` : ""}
+                  ${isAdminLogged && !isSharedVitrineMode ? `
+                    <div class="z-10 absolute top-2 left-2 flex gap-1">
+                      <button onclick="event.stopPropagation(); startEditPost('${post.id}')" class="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-pen"></i></button>
+                      <button onclick="event.stopPropagation(); deletePost('${post.id}')" class="w-6 h-6 rounded-lg bg-red-600 text-white flex items-center justify-center text-[10px] shadow"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                  ` : ""}
+
+                  ${hasVideo ? `
+                    <div onclick="openProductDetail('${post.id}')" class="relative aspect-[4/5] w-full bg-white flex items-center justify-center overflow-hidden cursor-pointer border-b border-gray-100">
+                      <video id="grid-vid-${post.id}" src="${post.videoData}" loop muted playsinline webkit-playsinline preload="metadata"
+                        class="w-full h-full object-cover"></video>
+                      <span class="absolute bottom-2 left-2 bg-amber-400 text-[#031238] text-[9px] font-black px-1.5 py-0.5 rounded-md pointer-events-none shadow-xs">
+                        VÍDEO 15s
+                      </span>
+                      <button onclick="toggleGridVideoAudio(event, '${post.id}')" title="Som"
+                        class="z-10 absolute bottom-2 right-2 w-6 h-6 rounded-full bg-black/75 text-white flex items-center justify-center text-[10px] border border-white/20">
+                        <i id="grid-audio-icon-${post.id}" class="fa-solid fa-volume-xmark"></i>
+                      </button>
+                    </div>
+                  ` : canSwipeInGrid ? `
+                    <div class="relative aspect-[4/5] w-full bg-white overflow-hidden border-b border-gray-100">
+                      <div id="grid-track-${post.id}"
+                        onpointerdown="markGridTrackStart(this)"
+                        onscroll="updateGridCardPhotoCounter(this, '${post.id}', ${images.length})"
+                        onclick="handleGridCardSlideTap(event, this, '${post.id}')"
+                        class="carousel-track flex w-full h-full overflow-x-auto no-scrollbar cursor-pointer">
+                        ${images.map((imgSrc, sIdx) => `
+                          <div class="carousel-slide w-full h-full flex-shrink-0">
+                            <img src="${imgSrc}" alt="${safeTitle}" loading="${idx < 4 && sIdx === 0 ? 'eager' : 'lazy'}" decoding="async"
+                              class="w-full h-full object-cover select-none" />
+                          </div>
+                        `).join("")}
+                      </div>
+
+                      <button type="button" onclick="slideGridCardPhoto(event, '${post.id}', -1, ${images.length})" title="Imagem anterior"
+                        aria-label="Imagem anterior"
+                        class="z-10 absolute left-1.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/65 hover:bg-black/85 text-white flex items-center justify-center text-[10px] shadow transition sm:opacity-75 sm:group-hover:opacity-100 active:scale-90">
+                        <i class="fa-solid fa-chevron-left"></i>
+                      </button>
+
+                      <button type="button" onclick="slideGridCardPhoto(event, '${post.id}', 1, ${images.length})" title="Próxima imagem"
+                        aria-label="Próxima imagem"
+                        class="z-10 absolute right-1.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/65 hover:bg-black/85 text-white flex items-center justify-center text-[10px] shadow transition sm:opacity-75 sm:group-hover:opacity-100 active:scale-90">
+                        <i class="fa-solid fa-chevron-right"></i>
+                      </button>
+
+                      <span id="grid-photo-counter-${post.id}"
+                        class="pointer-events-none absolute bottom-2 right-2 bg-black/75 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+                        1/${images.length}
+                      </span>
+                    </div>
+                  ` : `
+                    <div onclick="openProductDetail('${post.id}')" class="relative aspect-[4/5] w-full bg-white flex items-center justify-center overflow-hidden cursor-pointer border-b border-gray-100">
+                      <img src="${coverImg}" alt="${safeTitle}" loading="${idx < 4 ? 'eager' : 'lazy'}" decoding="async"
+                        class="w-full h-full object-cover" />
+                      ${images.length > 1 ? `
+                        <span class="absolute bottom-2 right-2 bg-black/70 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+                          +${images.length - 1}
+                        </span>
+                      ` : ""}
+                    </div>
+                  `}
+
+                  <div onclick="openProductDetail('${post.id}')" class="p-2.5 flex-1 flex flex-col justify-between space-y-1 cursor-pointer">
+                    <div class="space-y-0.5">
+                      <span class="inline-block text-[8px] font-extrabold px-1.5 py-0.5 rounded ${info.badgeClass}">${info.badge}</span>
+                      <h2 class="text-xs sm:text-[13px] font-semibold text-slate-800 leading-tight line-clamp-2">${post.title}</h2>
+                    </div>
+
+                    <div class="pt-0.5">
+                      ${post.oldPrice && discountPct > 0 ? `<p class="text-[10px] text-gray-400 line-through leading-none">${post.oldPrice}</p>` : ""}
+                      <div class="flex items-baseline gap-1 flex-wrap">
+                        <span class="text-sm sm:text-[15px] font-black text-slate-900 leading-tight">${post.price || "Sob consulta"}</span>
+                        ${discountPct > 0 ? `<span class="text-[9px] font-extrabold text-[#00A650]">${discountPct}% OFF</span>` : ""}
+                      </div>
+                      <p class="text-[9px] font-bold text-gray-400 truncate mt-0.5">${partnerTitle}</p>
+                    </div>
+                  </div>
+
+                  <div class="px-2 pb-2 flex items-center gap-1">
+                    ${hasWhats ? `
+                      <button onclick="openPostWhatsapp('${post.id}')" title="Conversar com Vendedor"
+                        class="${hasInsta ? 'flex-1' : 'w-full'} py-1.5 px-1.5 rounded-lg bg-[#00A650] hover:bg-[#008f44] text-white font-extrabold text-[10px] flex items-center justify-center gap-1 transition active:scale-95 truncate">
+                        <i class="fa-brands fa-whatsapp text-xs flex-shrink-0"></i>
+                        <span class="truncate">${hasInsta ? 'Conversar' : 'Conversar com Vendedor'}</span>
+                      </button>
+                    ` : ""}
+
+                    ${hasInsta ? `
+                      <button onclick="openPostInstagram('${post.id}')" title="Instagram da Loja"
+                        class="${hasWhats ? 'flex-1' : 'w-full'} py-1.5 px-1.5 rounded-lg bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white font-extrabold text-[10px] flex items-center justify-center gap-1 transition active:scale-95 truncate">
+                        <i class="fa-brands fa-instagram text-xs flex-shrink-0"></i>
+                        <span class="truncate">Instagram</span>
+                      </button>
+                    ` : ""}
+
+                    ${(!hasWhats && !hasInsta) ? `
+                      <button onclick="openProductDetail('${post.id}')"
+                        class="w-full py-1.5 px-2 rounded-lg bg-[#031238] text-amber-400 font-extrabold text-[10px] flex items-center justify-center gap-1">
+                        <span>Ver Detalhes</span>
+                      </button>
+                    ` : ""}
+                  </div>
+                </article>
+              `;
+            }).join("")}
+          </div>
         `;
-        startFlashDealsTicker();
         setupGridVideoVisibilityControl();
         return;
       }
 
       // MODO LISTA (1 COLUNA)
-      const listCards = filtered.map((post, postIndex) => {
-        const isSaved = savedIds.includes(post.id);
-        const images = post.images || [];
-        const hasVideo = Boolean(post.videoData && post.videoData.trim());
-        const info = getPostClassification(post);
-        const partnerTitle = (post.partnerName && post.partnerName.trim()) ? post.partnerName.trim() : (config.companyName || "TERÊ SHOPPING");
-        const serviceModeLabel = post.serviceMode || "Atendimento Online e Presencial";
-        const safeTitle = (post.title || "").replace(/'/g, "");
-        const hasPostInsta = Boolean(post.instagram && post.instagram.trim());
-        const hasPostWhats = Boolean(post.whatsapp && post.whatsapp.trim());
-        const imgLoadingAttr = postIndex < 2 ? "eager" : "lazy";
-
-        return `
-          <article class="pb-4 bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-2xs">
-            <div class="px-3.5 py-2.5 flex items-center justify-between gap-2">
-              <div class="flex items-center gap-2.5 min-w-0">
-                <div class="w-8 h-8 rounded-full bg-[#031238] text-amber-400 flex items-center justify-center text-xs border border-amber-400/50 flex-shrink-0">
-                  <i class="fa-solid ${info.icon}"></i>
-                </div>
-                <div class="min-w-0">
-                  <p class="text-xs font-extrabold text-slate-900 leading-tight truncate flex items-center gap-1">
-                    <span>${partnerTitle}</span>
-                    <i class="fa-solid fa-circle-check text-[#3483FA] text-[10px]"></i>
-                  </p>
-                  <p class="text-[10px] text-gray-500 font-medium truncate">${serviceModeLabel}</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-1.5 flex-shrink-0">
-                <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full ${info.badgeClass}">${info.badge}</span>
-                ${isAdminLogged && !isSharedVitrineMode ? `
-                  <button onclick="startEditPost('${post.id}')" class="text-blue-600 p-1.5 bg-blue-50 rounded-lg"><i class="fa-solid fa-pen text-xs"></i></button>
-                  <button onclick="deletePost('${post.id}')" class="text-red-500 p-1.5 bg-red-50 rounded-lg"><i class="fa-solid fa-trash text-xs"></i></button>` : ""}
-              </div>
-            </div>
-
-            <div onclick="openProductDetail('${post.id}')" class="relative bg-white border-y border-gray-100 cursor-pointer overflow-hidden">
-              ${hasVideo ? `
-                <video src="${post.videoData}" loop muted playsinline webkit-playsinline preload="metadata" class="w-full max-h-[420px] object-cover mx-auto"></video>
-                <span class="absolute bottom-2 left-2 bg-amber-400 text-[#031238] text-[10px] font-black px-2 py-0.5 rounded-md">VÍDEO 15s</span>
-              ` : `
-                <img src="${images[0] || './icon-512.png'}" alt="${safeTitle}" loading="${imgLoadingAttr}" class="w-full max-h-[420px] object-cover mx-auto" />
-              `}
-            </div>
-
-            <div class="px-3.5 pt-2.5 space-y-2">
-              <div onclick="openProductDetail('${post.id}')" class="cursor-pointer space-y-0.5">
-                <div class="flex flex-wrap items-baseline justify-between gap-x-2">
-                  <h2 class="font-extrabold text-sm text-slate-900">${post.title}</h2>
-                  ${post.price ? `<span class="font-black text-sm text-[#00A650]">${post.price}</span>` : ""}
-                </div>
-                <p class="text-xs text-gray-600 line-clamp-2">${post.description}</p>
-              </div>
-
-              <div class="flex items-center gap-1.5">
-                <button onclick="toggleSave('${post.id}')" class="px-2.5 py-2 rounded-xl border border-gray-200 ${isSaved ? 'bg-red-50 text-red-600 border-red-200' : 'bg-white text-slate-700'} font-bold text-xs flex items-center gap-1">
-                  <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-heart"></i><span>Salvar</span>
-                </button>
-                ${hasPostWhats ? `
-                  <button onclick="openPostWhatsapp('${post.id}')" class="flex-1 bg-[#00A650] text-white font-bold text-xs py-2 px-2.5 rounded-xl flex items-center justify-center gap-1.5">
-                    <i class="fa-brands fa-whatsapp text-sm"></i><span>Conversar</span>
-                  </button>` : ""}
-                ${hasPostInsta ? `
-                  <button onclick="openPostInstagram('${post.id}')" class="flex-1 bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white font-bold text-xs py-2 px-2.5 rounded-xl flex items-center justify-center gap-1.5">
-                    <i class="fa-brands fa-instagram text-sm"></i><span>Instagram</span>
-                  </button>` : ""}
-              </div>
-            </div>
-          </article>
-        `;
-      });
-
-      const listSplit = Math.min(2, listCards.length);
       container.innerHTML = `
         <div class="space-y-3 max-w-3xl mx-auto">
-          ${listCards.slice(0, listSplit).join("")}
-          ${flashCardHTML}
-          ${listCards.slice(listSplit).join("")}
+          ${filtered.map((post, postIndex) => {
+            const isSaved = savedIds.includes(post.id);
+            const images = post.images || [];
+            const hasVideo = Boolean(post.videoData && post.videoData.trim());
+            const info = getPostClassification(post);
+            const partnerTitle = (post.partnerName && post.partnerName.trim()) ? post.partnerName.trim() : (config.companyName || "TERÊ SHOPPING");
+            const serviceModeLabel = post.serviceMode || "Atendimento Online e Presencial";
+            const safeTitle = (post.title || "").replace(/'/g, "");
+            const hasPostInsta = Boolean(post.instagram && post.instagram.trim());
+            const hasPostWhats = Boolean(post.whatsapp && post.whatsapp.trim());
+            const imgLoadingAttr = postIndex < 2 ? "eager" : "lazy";
+
+            return `
+              <article class="pb-4 bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-2xs">
+                <div class="px-3.5 py-2.5 flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-[#031238] text-amber-400 flex items-center justify-center text-xs border border-amber-400/50 flex-shrink-0">
+                      <i class="fa-solid ${info.icon}"></i>
+                    </div>
+                    <div class="min-w-0">
+                      <p class="text-xs font-extrabold text-slate-900 leading-tight truncate flex items-center gap-1">
+                        <span>${partnerTitle}</span>
+                        <i class="fa-solid fa-circle-check text-[#3483FA] text-[10px]"></i>
+                      </p>
+                      <p class="text-[10px] text-gray-500 font-medium truncate">${serviceModeLabel}</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-1.5 flex-shrink-0">
+                    <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full ${info.badgeClass}">${info.badge}</span>
+                    ${isAdminLogged && !isSharedVitrineMode ? `
+                      <button onclick="startEditPost('${post.id}')" class="text-blue-600 p-1.5 bg-blue-50 rounded-lg"><i class="fa-solid fa-pen text-xs"></i></button>
+                      <button onclick="deletePost('${post.id}')" class="text-red-500 p-1.5 bg-red-50 rounded-lg"><i class="fa-solid fa-trash text-xs"></i></button>` : ""}
+                  </div>
+                </div>
+
+                <div onclick="openProductDetail('${post.id}')" class="relative bg-white border-y border-gray-100 cursor-pointer overflow-hidden">
+                  ${hasVideo ? `
+                    <video src="${post.videoData}" loop muted playsinline webkit-playsinline preload="metadata" class="w-full max-h-[420px] object-cover mx-auto"></video>
+                    <span class="absolute bottom-2 left-2 bg-amber-400 text-[#031238] text-[10px] font-black px-2 py-0.5 rounded-md">VÍDEO 15s</span>
+                  ` : `
+                    <img src="${images[0] || './icon-512.png'}" alt="${safeTitle}" loading="${imgLoadingAttr}" class="w-full max-h-[420px] object-cover mx-auto" />
+                  `}
+                </div>
+
+                <div class="px-3.5 pt-2.5 space-y-2">
+                  <div onclick="openProductDetail('${post.id}')" class="cursor-pointer space-y-0.5">
+                    <div class="flex flex-wrap items-baseline justify-between gap-x-2">
+                      <h2 class="font-extrabold text-sm text-slate-900">${post.title}</h2>
+                      ${post.price ? `<span class="font-black text-sm text-[#00A650]">${post.price}</span>` : ""}
+                    </div>
+                    <p class="text-xs text-gray-600 line-clamp-2">${post.description}</p>
+                  </div>
+
+                  <div class="flex items-center gap-1.5">
+                    <button onclick="toggleSave('${post.id}')" class="px-2.5 py-2 rounded-xl border border-gray-200 ${isSaved ? 'bg-red-50 text-red-600 border-red-200' : 'bg-white text-slate-700'} font-bold text-xs flex items-center gap-1">
+                      <i class="${isSaved ? 'fa-solid' : 'fa-regular'} fa-heart"></i><span>Salvar</span>
+                    </button>
+                    ${hasPostWhats ? `
+                      <button onclick="openPostWhatsapp('${post.id}')" class="flex-1 bg-[#00A650] text-white font-bold text-xs py-2 px-2.5 rounded-xl flex items-center justify-center gap-1.5">
+                        <i class="fa-brands fa-whatsapp text-sm"></i><span>Conversar</span>
+                      </button>` : ""}
+                    ${hasPostInsta ? `
+                      <button onclick="openPostInstagram('${post.id}')" class="flex-1 bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white font-bold text-xs py-2 px-2.5 rounded-xl flex items-center justify-center gap-1.5">
+                        <i class="fa-brands fa-instagram text-sm"></i><span>Instagram</span>
+                      </button>` : ""}
+                  </div>
+                </div>
+              </article>
+            `;
+          }).join("")}
         </div>
       `;
-      startFlashDealsTicker();
       setupGridVideoVisibilityControl();
     }
 
@@ -2784,8 +2491,6 @@
         document.getElementById("cfgLogoPreviewBox").classList.replace("flex", "hidden");
       }
 
-      populateFlashPostSelector();
-      syncAdminFlashDealsUI();
       renderAdminBannersList();
       document.getElementById("adminModal").classList.replace("hidden", "flex");
     }
@@ -2800,192 +2505,17 @@
 
     window.switchAdminTab = function(tab) {
       document.getElementById("newPostForm").classList.toggle("hidden", tab !== "newPost");
-      document.getElementById("flashDealsForm").classList.toggle("hidden", tab !== "flashDeals");
       document.getElementById("bannersForm").classList.toggle("hidden", tab !== "banners");
       document.getElementById("settingsForm").classList.toggle("hidden", tab !== "settings");
 
-      ["newPost", "flashDeals", "banners", "settings"].forEach(t => {
+      ["newPost", "banners", "settings"].forEach(t => {
         const btn = document.getElementById(`admTab-${t}`);
         if (!btn) return;
         btn.className = t === tab
-          ? "flex-1 px-3 py-3 border-b-2 border-blue-700 text-blue-700 whitespace-nowrap"
-          : "flex-1 px-3 py-3 border-b-2 border-transparent text-gray-500 whitespace-nowrap";
+          ? "flex-1 px-4 py-3 border-b-2 border-blue-700 text-blue-700 whitespace-nowrap"
+          : "flex-1 px-4 py-3 border-b-2 border-transparent text-gray-500 whitespace-nowrap";
       });
-
-      if (tab === "flashDeals") {
-        populateFlashPostSelector();
-        syncAdminFlashDealsUI();
-      }
     };
-
-    // GESTÃO DE OFERTAS RELÂMPAGO NO PAINEL ADM
-    function populateFlashPostSelector() {
-      const sel = document.getElementById("flashPostSelector");
-      if (!sel) return;
-      sel.innerHTML = `<option value="">-- Criar item manual ou selecionar post --</option>` +
-        posts.map(p => `<option value="${p.id}">${(p.title || "").slice(0, 48)} (${p.price || "Sem preço"})</option>`).join("");
-    }
-
-    window.fillFlashItemFromPost = function(postId) {
-      linkedFlashPostId = postId || "";
-      if (!postId) return;
-      const post = posts.find(p => p.id === postId);
-      if (!post) return;
-
-      document.getElementById("flashItemTitle").value = post.title || "";
-      document.getElementById("flashItemOldPrice").value = post.oldPrice || "";
-      document.getElementById("flashItemPrice").value = post.price || "";
-      document.getElementById("flashItemWhatsapp").value = post.whatsapp || "";
-
-      if (post.images && post.images[0]) {
-        pendingFlashItemImage = post.images[0];
-        document.getElementById("flashItemPreviewImg").src = pendingFlashItemImage;
-        document.getElementById("flashItemPreviewBox").classList.remove("hidden");
-      }
-    };
-
-    window.handleFlashItemImageUpload = async function(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      pendingFlashItemImage = await compressImage(file, 800, 0.85);
-      document.getElementById("flashItemPreviewImg").src = pendingFlashItemImage;
-      document.getElementById("flashItemPreviewBox").classList.remove("hidden");
-    };
-
-    window.toggleFlashDealsActiveNow = async function(checked) {
-      if (!isAdminLogged || !auth.currentUser) {
-        showToast("Faça login como administrador.");
-        return;
-      }
-      const hours = Number(document.getElementById("flashDealsDurationHours").value || 6);
-      const nextEndsAt = checked && (!flashDealsState.endsAt || flashDealsState.endsAt <= Date.now())
-        ? Date.now() + (hours * 3600 * 1000)
-        : flashDealsState.endsAt;
-
-      try {
-        await set(ref(db, "flashDeals/active"), Boolean(checked));
-        if (nextEndsAt) {
-          await set(ref(db, "flashDeals/endsAt"), nextEndsAt);
-        }
-        showToast(checked ? "Ofertas Relâmpago ativadas!" : "Ofertas Relâmpago pausadas.");
-      } catch (err) {
-        showToast("Erro ao alterar status da Oferta Relâmpago.");
-      }
-    };
-
-    window.saveFlashDealsTimerConfig = async function() {
-      if (!isAdminLogged || !auth.currentUser) {
-        showToast("Faça login como administrador.");
-        return;
-      }
-      const toggleEl = document.getElementById("flashDealsActiveToggle");
-      if (toggleEl && !toggleEl.checked) {
-        toggleEl.checked = true;
-      }
-      const hours = Number(document.getElementById("flashDealsDurationHours").value || 6);
-      const endsAt = Date.now() + (hours * 3600 * 1000);
-
-      try {
-        await set(ref(db, "flashDeals/active"), true);
-        await set(ref(db, "flashDeals/endsAt"), endsAt);
-        showToast(`Cronômetro relâmpago iniciado por ${hours}h!`);
-      } catch (err) {
-        showToast("Erro ao atualizar cronômetro relâmpago.");
-      }
-    };
-
-    window.handleAddFlashDealItem = async function(event) {
-      event.preventDefault();
-      if (!isAdminLogged || !auth.currentUser) {
-        showToast("Faça login como administrador.");
-        return;
-      }
-      if (!pendingFlashItemImage) {
-        showToast("Selecione a foto do produto relâmpago.");
-        return;
-      }
-
-      const btn = document.getElementById("saveFlashItemBtn");
-      btn.disabled = true;
-      btn.textContent = "Salvando oferta...";
-
-      try {
-        const title = document.getElementById("flashItemTitle").value.trim();
-        const oldPrice = document.getElementById("flashItemOldPrice").value.trim();
-        const price = document.getElementById("flashItemPrice").value.trim();
-        const whatsapp = document.getElementById("flashItemWhatsapp").value.trim();
-
-        const newItemRef = push(ref(db, "flashDeals/items"));
-        await set(newItemRef, {
-          title,
-          oldPrice,
-          price,
-          whatsapp,
-          linkedPostId: linkedFlashPostId || "",
-          imageData: pendingFlashItemImage,
-          timestamp: Date.now()
-        });
-
-        const hours = Number(document.getElementById("flashDealsDurationHours").value || 6);
-        await set(ref(db, "flashDeals/active"), true);
-        if (!flashDealsState.endsAt || flashDealsState.endsAt <= Date.now()) {
-          await set(ref(db, "flashDeals/endsAt"), Date.now() + (hours * 3600 * 1000));
-        }
-
-        event.target.reset();
-        pendingFlashItemImage = "";
-        linkedFlashPostId = "";
-        document.getElementById("flashItemPreviewBox").classList.add("hidden");
-        showToast("Item adicionado às Ofertas Relâmpago!");
-      } catch (err) {
-        showToast("Erro ao salvar item relâmpago.");
-      } finally {
-        btn.disabled = false;
-        btn.textContent = "+ Adicionar Item à Oferta Relâmpago";
-      }
-    };
-
-    window.deleteFlashDealItem = async function(itemId) {
-      if (!isAdminLogged || !auth.currentUser) return;
-      if (!confirm("Remover este item das Ofertas Relâmpago?")) return;
-      try {
-        await remove(ref(db, `flashDeals/items/${itemId}`));
-        showToast("Item removido.");
-      } catch (err) {
-        showToast("Erro ao remover item.");
-      }
-    };
-
-    function syncAdminFlashDealsUI() {
-      const toggle = document.getElementById("flashDealsActiveToggle");
-      if (toggle) toggle.checked = Boolean(flashDealsState.active);
-
-      const listBox = document.getElementById("adminFlashItemsList");
-      if (!listBox) return;
-
-      if (!flashDealsState.items || flashDealsState.items.length === 0) {
-        listBox.innerHTML = `<p class="text-[11px] text-gray-400">Nenhum item na oferta relâmpago ainda.</p>`;
-        return;
-      }
-
-      listBox.innerHTML = `
-        <p class="text-xs font-bold text-gray-700">Itens na Oferta Relâmpago (${flashDealsState.items.length}):</p>
-        ${flashDealsState.items.map(item => `
-          <div class="flex items-center justify-between gap-2 bg-white p-2.5 rounded-xl border border-gray-200 text-xs">
-            <div class="flex items-center gap-2.5 min-w-0">
-              <img src="${item.imageData}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0 border border-gray-100" />
-              <div class="truncate">
-                <p class="font-bold truncate">${item.title}</p>
-                <p class="text-[11px] text-emerald-700 font-extrabold">${item.price} <span class="text-gray-400 line-through font-normal">${item.oldPrice || ""}</span></p>
-              </div>
-            </div>
-            <button type="button" onclick="deleteFlashDealItem('${item.id}')" class="text-red-600 p-1.5 rounded-lg hover:bg-red-50 flex-shrink-0">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
-        `).join("")}
-      `;
-    }
 
     // VÍDEO CURTO DE 15s
     window.handlePostVideoLoaded = function(event) {
