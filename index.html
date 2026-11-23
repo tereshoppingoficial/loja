@@ -520,7 +520,7 @@
   <!-- TOAST DE NOTIFICAÇÃO -->
   <div id="toast" class="fixed bottom-20 md:bottom-24 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-xs font-medium px-4 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-200 text-center max-w-[90vw]"></div>
 
-  <!-- MODAL LOGIN DO ADMINISTRADOR -->
+  <!-- MODAL LOGIN DO ADMINISTRADOR (FIREBASE AUTHENTICATION) -->
   <div id="loginModal" class="fixed inset-0 z-50 bg-black/65 hidden items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl">
       <div class="flex justify-between items-center mb-3">
@@ -532,18 +532,28 @@
         </div>
         <button onclick="closeModal('loginModal')" class="text-gray-400 hover:text-gray-700 p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <p class="text-xs text-gray-500 mb-4">Insira a senha de administrador para gerir anúncios, banners e configurações.</p>
+      <p class="text-xs text-gray-500 mb-4">Entre com o e-mail e a senha cadastrados no Firebase Authentication para gerir o marketplace.</p>
 
       <form onsubmit="event.preventDefault(); verifyAdminLogin();" class="space-y-3">
+        <div>
+          <label class="block text-[11px] font-bold text-gray-600 mb-1">E-mail do Administrador</label>
+          <input type="email" id="adminEmailInput" autocomplete="username" required placeholder="adm@exemplo.com"
+            class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-blue-600" />
+        </div>
+
         <div class="relative">
-          <input type="password" id="adminPasswordInput" autocomplete="current-password" placeholder="••••••••"
+          <label class="block text-[11px] font-bold text-gray-600 mb-1">Senha</label>
+          <input type="password" id="adminPasswordInput" autocomplete="current-password" required placeholder="••••••••"
             class="w-full border border-gray-300 rounded-xl pl-3.5 pr-10 py-2.5 text-sm focus:outline-none focus:border-blue-600" />
           <button type="button" onclick="togglePasswordVisibility('adminPasswordInput', 'loginEyeIcon')"
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
+            class="absolute right-3 bottom-2.5 text-gray-400 hover:text-gray-700">
             <i id="loginEyeIcon" class="fa-regular fa-eye text-sm"></i>
           </button>
         </div>
-        <button type="submit" class="w-full bg-[#081c45] text-white font-semibold py-2.5 rounded-xl text-sm hover:bg-blue-900 transition">
+
+        <p id="loginLockoutNotice" class="hidden text-[11px] font-bold text-red-600 bg-red-50 px-3 py-2 rounded-xl"></p>
+
+        <button type="submit" id="adminLoginSubmitBtn" class="w-full bg-[#081c45] text-white font-semibold py-2.5 rounded-xl text-sm hover:bg-blue-900 transition">
           Entrar no Painel
         </button>
         <button type="button" onclick="closeModal('loginModal')" class="w-full bg-gray-100 text-gray-700 font-semibold py-2.5 rounded-xl text-xs hover:bg-gray-200 transition">
@@ -581,7 +591,7 @@
           Banners Topo
         </button>
         <button type="button" onclick="switchAdminTab('settings')" id="admTab-settings" class="flex-1 px-4 py-3 border-b-2 border-transparent text-gray-500 whitespace-nowrap">
-          Capa & Senha
+          Capa
         </button>
       </div>
 
@@ -830,7 +840,7 @@
           <div id="adminActiveBannersList" class="pt-3 border-t border-gray-200 space-y-2"></div>
         </form>
 
-        <!-- ABA 3: CAPA PANORÂMICA DO TOPO & CONFIGURAÇÕES -->
+        <!-- ABA 3: CAPA PANORÂMICA DO TOPO -->
         <form id="settingsForm" onsubmit="handleSaveSettings(event)" class="space-y-4 hidden">
 
           <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
@@ -870,20 +880,9 @@
             </div>
           </div>
 
-          <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">Senha de Acesso Administrativo</label>
-            <div class="relative">
-              <input type="password" id="cfgPassword" required class="w-full border border-gray-300 rounded-xl pl-3 pr-10 py-2 text-sm" />
-              <button type="button" onclick="togglePasswordVisibility('cfgPassword', 'cfgEyeIcon')"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700">
-                <i id="cfgEyeIcon" class="fa-regular fa-eye text-sm"></i>
-              </button>
-            </div>
-          </div>
-
           <div class="space-y-2 pt-1">
             <button type="submit" id="saveCfgBtn" class="w-full bg-[#081c45] text-white font-semibold py-3 rounded-xl text-sm hover:bg-blue-900 transition">
-              Salvar Capa e Configurações
+              Salvar Capa
             </button>
             <button type="button" onclick="cancelAndReturnFromAdmin()" class="w-full bg-gray-100 text-gray-700 font-bold py-2.5 rounded-xl text-xs hover:bg-gray-200 transition">
               Cancelar e Voltar ao Feed
@@ -904,10 +903,11 @@
     }
   </script>
 
-  <!-- FIREBASE REALTIME DATABASE + MARKETPLACE ENGINE -->
+  <!-- FIREBASE REALTIME DATABASE + FIREBASE AUTHENTICATION + MARKETPLACE ENGINE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getDatabase, ref, set, push, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyC0wXUH9fz_ZmyqW6CAphG28LmjtkFTmOA",
@@ -922,6 +922,7 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const auth = getAuth(app);
 
     const DEPARTMENTS = [
       { id: "eletronicos", name: "Eletrônicos", short: "Eletrônicos", icon: "fa-mobile-screen" },
@@ -1098,8 +1099,7 @@
     const DEFAULT_CONFIG = {
       companyName: "TERÊ SHOPPING",
       headerMode: "title",
-      logoData: "",
-      adminPass: "admin123"
+      logoData: ""
     };
 
     let config = { ...DEFAULT_CONFIG };
@@ -1117,6 +1117,10 @@
     let isCategoriesDrawerOpen = false;
 
     let isAdminLogged = false;
+    let failedLoginAttempts = 0;
+    let loginLockUntil = 0;
+    let loginLockInterval = null;
+
     let pendingPostImages = [];
     let pendingPostVideoData = "";
     let selectedRawPostVideoFile = null;
@@ -1462,18 +1466,36 @@
       renderFeed();
     };
 
-    // CONEXÕES FIREBASE
+    // ESTADO DE AUTENTICAÇÃO DO ADMINISTRADOR (FIREBASE AUTH)
+    function syncAdminButtonIcon() {
+      const btn = document.getElementById("adminToggleBtn");
+      if (!btn) return;
+      btn.innerHTML = isAdminLogged
+        ? `<i class="fa-solid fa-gear text-sm sm:text-base text-amber-400"></i>`
+        : `<i class="fa-solid fa-shield-halved text-sm sm:text-base"></i>`;
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      const wasLogged = isAdminLogged;
+      isAdminLogged = Boolean(user && !isSharedVitrineMode);
+      syncAdminButtonIcon();
+      if (wasLogged !== isAdminLogged) {
+        renderFeed();
+      }
+    });
+
+    // CONEXÕES FIREBASE REALTIME DATABASE
     const configRef = ref(db, "config");
     onValue(configRef, (snapshot) => {
       if (snapshot.exists()) {
         const val = snapshot.val();
-        config = { ...DEFAULT_CONFIG, ...val };
-        if (!val.companyName || val.companyName === "TERÊ SHOP") {
-          config.companyName = "TERÊ SHOPPING";
-          set(ref(db, "config/companyName"), "TERÊ SHOPPING").catch(() => {});
-        }
+        config = {
+          companyName: val.companyName || "TERÊ SHOPPING",
+          headerMode: val.headerMode || "title",
+          logoData: val.logoData || ""
+        };
       } else {
-        set(configRef, DEFAULT_CONFIG);
+        config = { ...DEFAULT_CONFIG };
       }
       pendingLogoData = config.logoData || "";
       applyConfigUI();
@@ -2313,12 +2335,41 @@
       }
     };
 
+    function startLockoutCountdown() {
+      const notice = document.getElementById("loginLockoutNotice");
+      const submitBtn = document.getElementById("adminLoginSubmitBtn");
+      if (loginLockInterval) clearInterval(loginLockInterval);
+
+      const updateTick = () => {
+        const remainingSec = Math.ceil((loginLockUntil - Date.now()) / 1000);
+        if (remainingSec <= 0) {
+          clearInterval(loginLockInterval);
+          loginLockInterval = null;
+          failedLoginAttempts = 0;
+          if (notice) notice.classList.add("hidden");
+          if (submitBtn) submitBtn.disabled = false;
+          return;
+        }
+        if (notice) {
+          notice.textContent = `Muitas tentativas incorretas. Aguarde ${remainingSec}s para tentar novamente.`;
+          notice.classList.remove("hidden");
+        }
+        if (submitBtn) submitBtn.disabled = true;
+      };
+
+      updateTick();
+      loginLockInterval = setInterval(updateTick, 1000);
+    }
+
     window.openAdminGate = function() {
       if (isSharedVitrineMode) return;
-      if (isAdminLogged) {
+      if (isAdminLogged && auth.currentUser) {
         openAdminPanel();
       } else {
         document.getElementById("adminPasswordInput").value = "";
+        if (Date.now() < loginLockUntil) {
+          startLockoutCountdown();
+        }
         document.getElementById("loginModal").classList.replace("hidden", "flex");
       }
     };
@@ -2335,23 +2386,59 @@
       }
     };
 
-    window.verifyAdminLogin = function() {
-      const pass = document.getElementById("adminPasswordInput").value;
-      if (pass === config.adminPass) {
+    window.verifyAdminLogin = async function() {
+      if (Date.now() < loginLockUntil) {
+        startLockoutCountdown();
+        return;
+      }
+
+      const emailInput = document.getElementById("adminEmailInput");
+      const passInput = document.getElementById("adminPasswordInput");
+      const submitBtn = document.getElementById("adminLoginSubmitBtn");
+      const email = (emailInput ? emailInput.value : "").trim();
+      const pass = passInput ? passInput.value : "";
+
+      if (!email || !pass) {
+        showToast("Informe o e-mail e a senha do administrador.");
+        return;
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Verificando...";
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        failedLoginAttempts = 0;
+        loginLockUntil = 0;
         isAdminLogged = true;
-        document.getElementById("adminToggleBtn").innerHTML = `<i class="fa-solid fa-gear text-sm sm:text-base text-amber-400"></i>`;
+        syncAdminButtonIcon();
         closeModal("loginModal");
         openAdminPanel();
         renderFeed();
-        showToast("Modo Administrador ativado");
-      } else {
-        showToast("Senha incorreta!");
+        showToast("Sessão administrativa autenticada!");
+      } catch (err) {
+        failedLoginAttempts += 1;
+        if (failedLoginAttempts >= 5) {
+          loginLockUntil = Date.now() + 30000;
+          startLockoutCountdown();
+        }
+        showToast("E-mail ou senha inválidos.");
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = Date.now() < loginLockUntil;
+          submitBtn.textContent = "Entrar no Painel";
+        }
       }
     };
 
-    window.logoutAdmin = function() {
+    window.logoutAdmin = async function() {
+      try {
+        await signOut(auth);
+      } catch (_) {}
       isAdminLogged = false;
-      document.getElementById("adminToggleBtn").innerHTML = `<i class="fa-solid fa-shield-halved text-sm sm:text-base"></i>`;
+      syncAdminButtonIcon();
       resetPostForm();
       closeModal("adminModal");
       renderFeed();
@@ -2366,7 +2453,6 @@
 
     function openAdminPanel() {
       document.getElementById("cfgCompanyName").value = config.companyName || "TERÊ SHOPPING";
-      document.getElementById("cfgPassword").value = config.adminPass || "admin123";
 
       const modeRadio = document.querySelector(`input[name="headerMode"][value="${config.headerMode || "logo"}"]`);
       if (modeRadio) modeRadio.checked = true;
@@ -2689,6 +2775,10 @@
 
     window.handleSavePromoBanner = async function(event) {
       event.preventDefault();
+      if (!isAdminLogged || !auth.currentUser) {
+        showToast("Faça login como administrador para publicar banners.");
+        return;
+      }
       if (!pendingBannerImage) {
         showToast("Selecione uma imagem horizontal para o banner.");
         return;
@@ -2713,7 +2803,7 @@
         pendingBannerImage = "";
         showToast("Banner publicado no topo!");
       } catch (err) {
-        showToast("Erro ao publicar banner.");
+        showToast("Permissão negada ou erro ao publicar banner.");
       } finally {
         btn.disabled = false;
         btn.textContent = "Publicar Banner no Topo";
@@ -2721,9 +2811,17 @@
     };
 
     window.deletePromoBanner = async function(bannerId) {
+      if (!isAdminLogged || !auth.currentUser) {
+        showToast("Faça login como administrador.");
+        return;
+      }
       if (!confirm("Remover este banner promocional?")) return;
-      await remove(ref(db, `promoBanners/${bannerId}`));
-      showToast("Banner removido.");
+      try {
+        await remove(ref(db, `promoBanners/${bannerId}`));
+        showToast("Banner removido.");
+      } catch (err) {
+        showToast("Erro ao remover banner.");
+      }
     };
 
     function renderAdminBannersList() {
@@ -2850,6 +2948,7 @@
     }
 
     window.startEditPost = function(postId) {
+      if (!isAdminLogged || !auth.currentUser) return;
       const post = posts.find(p => p.id === postId);
       if (!post) return;
 
@@ -2917,6 +3016,10 @@
 
     window.handleSavePost = async function(event) {
       event.preventDefault();
+      if (!isAdminLogged || !auth.currentUser) {
+        showToast("Faça login como administrador para publicar.");
+        return;
+      }
       if (pendingPostImages.length === 0 && !selectedRawPostVideoFile && !pendingPostVideoData) {
         showToast("Selecione pelo menos 1 foto ou 1 vídeo curto de 15s.");
         return;
@@ -2990,6 +3093,10 @@
     };
 
     window.deletePost = async function(postId) {
+      if (!isAdminLogged || !auth.currentUser) {
+        showToast("Faça login como administrador.");
+        return;
+      }
       if (!confirm("Deseja realmente excluir este anúncio?")) return;
       try {
         await remove(ref(db, `posts/${postId}`));
@@ -3001,6 +3108,10 @@
 
     window.handleSaveSettings = async function(event) {
       event.preventDefault();
+      if (!isAdminLogged || !auth.currentUser) {
+        showToast("Faça login como administrador para alterar a capa.");
+        return;
+      }
       const btn = document.getElementById("saveCfgBtn");
       btn.disabled = true;
       btn.textContent = "Salvando...";
@@ -3010,17 +3121,16 @@
         const updatedConfig = {
           companyName: document.getElementById("cfgCompanyName").value.trim() || "TERÊ SHOPPING",
           headerMode: headerMode === "logo" && pendingLogoData ? "logo" : "title",
-          logoData: pendingLogoData,
-          adminPass: document.getElementById("cfgPassword").value.trim() || "admin123"
+          logoData: pendingLogoData
         };
         await set(ref(db, "config"), updatedConfig);
         closeModal("adminModal");
-        showToast("Capa e configurações guardadas na nuvem!");
+        showToast("Capa guardada na nuvem!");
       } catch (err) {
-        showToast("Erro ao guardar configurações.");
+        showToast("Permissão negada ou erro ao guardar capa.");
       } finally {
         btn.disabled = false;
-        btn.textContent = "Salvar Capa e Configurações";
+        btn.textContent = "Salvar Capa";
       }
     };
 
