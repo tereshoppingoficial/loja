@@ -789,7 +789,7 @@
                 <p class="text-[11px] text-amber-900/80">Exibido junto aos posts da vitrine com cronômetro regressivo.</p>
               </div>
               <label class="inline-flex items-center gap-2 cursor-pointer bg-white px-3 py-1.5 rounded-full border border-amber-300 shadow-2xs">
-                <input type="checkbox" id="flashDealsActiveToggle" class="accent-amber-500 w-4 h-4" />
+                <input type="checkbox" id="flashDealsActiveToggle" onchange="toggleFlashDealsActiveNow(this.checked)" class="accent-amber-500 w-4 h-4" />
                 <span class="text-xs font-extrabold text-slate-800">Ativo</span>
               </label>
             </div>
@@ -2834,6 +2834,23 @@
       document.getElementById("flashItemPreviewBox").classList.remove("hidden");
     };
 
+    window.toggleFlashDealsActiveNow = async function(checked) {
+      if (!isAdminLogged || !auth.currentUser) {
+        showToast("Faça login como administrador.");
+        return;
+      }
+      try {
+        const hours = Number(document.getElementById("flashDealsDurationHours").value || 6);
+        await set(ref(db, "flashDeals/active"), Boolean(checked));
+        if (checked && (!flashDealsState.endsAt || flashDealsState.endsAt <= Date.now())) {
+          await set(ref(db, "flashDeals/endsAt"), Date.now() + (hours * 3600 * 1000));
+        }
+        showToast(checked ? "Ofertas Relâmpago ativadas na vitrine!" : "Ofertas Relâmpago ocultadas.");
+      } catch (err) {
+        showToast("Erro ao alterar status das Ofertas Relâmpago.");
+      }
+    };
+
     window.saveFlashDealsTimerConfig = async function() {
       if (!isAdminLogged || !auth.currentUser) {
         showToast("Faça login como administrador.");
@@ -2884,12 +2901,10 @@
           timestamp: Date.now()
         });
 
-        if (!flashDealsState.active) {
-          const hours = Number(document.getElementById("flashDealsDurationHours").value || 6);
-          await set(ref(db, "flashDeals/active"), true);
-          if (!flashDealsState.endsAt || flashDealsState.endsAt <= Date.now()) {
-            await set(ref(db, "flashDeals/endsAt"), Date.now() + (hours * 3600 * 1000));
-          }
+        const hours = Number(document.getElementById("flashDealsDurationHours").value || 6);
+        await set(ref(db, "flashDeals/active"), true);
+        if (!flashDealsState.endsAt || flashDealsState.endsAt <= Date.now()) {
+          await set(ref(db, "flashDeals/endsAt"), Date.now() + (hours * 3600 * 1000));
         }
 
         event.target.reset();
